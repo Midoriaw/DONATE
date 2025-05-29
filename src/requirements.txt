@@ -1,0 +1,8 @@
+fastapi
+databases
+asyncpg
+sqlalchemy
+pydantic
+passlib
+uvicorn
+python-dotenv
