@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
 from src.models import RegORM, DonateRb, DonateBrawl, DonateSteam, Base
+from src.schema import Personal_accountOUT
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -47,3 +48,33 @@ async def don_brawl(db: AsyncSession, brawl_id:int, username:str, email:str, car
     await db.commit()
     await db.refresh(new_don)
     return new_don
+
+
+async def get_personal_account(db: AsyncSession,user_id: int, password: str):
+    result = await db.execute(select(RegORM).where(RegORM.id == user_id))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    if not pwd_context.verify(password, user.password):
+        raise HTTPException(status_code=404, detail="Неверный пароль")
+
+
+    result_Rb = (await db.execute(select(DonateRb).where(DonateRb.user_id == user_id)))
+    Rb = result_Rb.scalars().all()
+
+    result_steam = (await db.execute(select(DonateSteam).where(DonateSteam.user_id == user_id)))
+    steam = result_steam.scalars().all()
+
+    result_brawl = (await db.execute(select(DonateSteam).where(DonateSteam.user_id == user_id)))
+    brawl = result_brawl.scalars().all()
+
+    return {
+
+        "id": user.id,
+        "username": user.username,
+        "Rb": Rb,
+        "steam": steam,
+        "brawl": brawl
+    }

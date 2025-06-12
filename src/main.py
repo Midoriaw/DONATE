@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from passlib.context import CryptContext
 from src.database import get_db, lifespan
 from src.crud import create_users, log_users, don_rb, don_steam, don_brawl
-from src.schema import UserOUT, LogOUT, rbOUT, donsteamOUT, donbrawlOUT
+from src.schema import UserOUT, LogOUT, rbOUT, donsteamOUT, donbrawlOUT, Personal_accountOUT, PersonalAccountIN
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models import Base, RegORM, DonateRb,DonateBrawl,DonateSteam
 
@@ -51,3 +51,9 @@ async def brawl(brawlik: donbrawlOUT,db: AsyncSession = Depends(get_db)):
     "mess": "Операция выполнена успешно!",
     "new_don_brawl_id": new_don_brawl.id,
     }
+
+
+@app.post("/personal_account/{user_id}", response_model=Personal_accountOUT,tags=["Личный кабинет"])
+async def  personal_account(user_id: int, date:PersonalAccountIN ,db: AsyncSession =Depends(get_db)):
+    result = await get_personal_account(db, user_id, date.password)
+    return result

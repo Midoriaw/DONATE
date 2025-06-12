@@ -30,3 +30,17 @@ class donbrawlOUT(BaseModel):
     email: str
     cardnumber: str
     donate: int
+
+class Personal_accountOUT(BaseModel):
+    id: int
+    username: str
+    Rb: List[DonateRb]
+    steam: List[DonateSteam]
+    brawl: List[DonateBrawl]
+
+    class Config:
+        from_orm=True
+
+
+class PersonalAccountIN(BaseModel):
+    password: str
